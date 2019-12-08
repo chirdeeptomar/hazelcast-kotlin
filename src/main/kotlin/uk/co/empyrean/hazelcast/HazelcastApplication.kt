@@ -5,7 +5,7 @@ import com.hazelcast.client.HazelcastClient
 import com.hazelcast.client.config.ClientConfig
 import java.io.Serializable
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 
 fun main() {
@@ -13,7 +13,8 @@ fun main() {
     clientConfig.groupConfig.name = "dev"
     clientConfig.networkConfig.addAddress("192.168.99.1:5701")
 
-    val hazelcast = HazelcastClient.newHazelcastClient()
+    val hazelcast = HazelcastClient.newHazelcastClient(clientConfig)
+
     val personMap = hazelcast.getMap<UUID, Person>("person-map")
     createCustomers().forEach {
         personMap[it.id] = it
@@ -26,6 +27,8 @@ fun main() {
     }
 
     println(personMap.size)
+
+    hazelcast.shutdown()
 }
 
 interface Person : Serializable {
